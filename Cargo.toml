@@ -1,0 +1,25 @@
+[package]
+name = "uiua_node"
+version = "0.1.0"
+authors = ["DGCK81LNN"]
+license = "MIT"
+edition = "2021"
+exclude = ["index.node"]
+
+[lib]
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+neon = "1"
+image = { version = "0.24", default-features = false, features = [
+  "bmp",
+  "gif",
+  "ico",
+  "jpeg",
+  "png",
+  "qoi",
+  "webp",
+] }
+uiua = { version = "0.14", default-features = false, features = ["batteries"] }
