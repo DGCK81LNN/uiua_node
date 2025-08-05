@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 neon = "1"
-image = { version = "0.24", default-features = false, features = [
+image = { version = ">=0.25", default-features = false, features = [
   "bmp",
   "gif",
   "ico",

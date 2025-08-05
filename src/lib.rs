@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use backend::{MultimediaBackend, OutputItem};
 use neon::{prelude::*, types::buffer::TypedArray};
-use uiua::{encode::SmartOutput, format::FormatConfig, *};
+use uiua::{media::SmartOutput, format::FormatConfig, *};
 
 fn eval_internal(
     mut uiua: Uiua,
@@ -87,9 +87,9 @@ fn eval_mm(mut cx: FunctionContext) -> JsResult<JsObject> {
     match res.1 {
         Ok(_) => {
             for value in uiua.take_stack() {
-                match SmartOutput::from_value(value, &sys) {
+                match SmartOutput::from_value(value, 24.0, &sys) {
                     SmartOutput::Normal(value) => {
-                        sys.show(value).unwrap();
+                        sys.print_str_stdout(&format!("{}\n", value)).unwrap();
                     }
                     SmartOutput::Png(bytes, label) => {
                         sys.show_png(bytes, label.as_deref()).unwrap();
@@ -97,8 +97,17 @@ fn eval_mm(mut cx: FunctionContext) -> JsResult<JsObject> {
                     SmartOutput::Gif(bytes, label) => {
                         sys.show_gif(bytes, label.as_deref()).unwrap();
                     }
+                    SmartOutput::Apng(bytes, label) => {
+                        sys.show_apng(bytes, label.as_deref()).unwrap();
+                    }
                     SmartOutput::Wav(bytes, label) => {
                         sys.play_audio(bytes, label.as_deref()).unwrap();
+                    }
+                    SmartOutput::Svg { svg, original } => {
+                        sys.show_svg(
+                            svg.into_bytes(),
+                            original.meta.label.as_ref().map(|l| l.as_str())
+                        ).unwrap();
                     }
                 };
             }

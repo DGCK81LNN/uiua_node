@@ -34,10 +34,18 @@ impl MultimediaBackend {
         take(&mut self.outputs.lock().unwrap())
     }
 
-    pub fn show_png(&self, png_bytes: Vec<u8>, label: Option<&str>) -> Result<(), String> {
+    pub fn show_png(&self, bytes: Vec<u8>, label: Option<&str>) -> Result<(), String> {
         (self.outputs.lock().unwrap()).push(OutputItem::Image {
-            data: png_bytes,
+            data: bytes,
             mime: "image/png".to_string(),
+            label: label.map(|s| s.to_string()),
+        });
+        Ok(())
+    }
+    pub fn show_svg(&self, bytes: Vec<u8>, label: Option<&str>) -> Result<(), String> {
+        (self.outputs.lock().unwrap()).push(OutputItem::Image {
+            data: bytes,
+            mime: "image/svg+xml".to_string(),
             label: label.map(|s| s.to_string()),
         });
         Ok(())
@@ -88,6 +96,14 @@ impl SysBackend for MultimediaBackend {
         (self.outputs.lock().unwrap()).push(OutputItem::Image {
             data: gif_bytes,
             mime: "image/gif".to_string(),
+            label: label.map(|s| s.to_string()),
+        });
+        Ok(())
+    }
+    fn show_apng(&self, gif_bytes: Vec<u8>, label: Option<&str>) -> Result<(), String> {
+        (self.outputs.lock().unwrap()).push(OutputItem::Image {
+            data: gif_bytes,
+            mime: "image/apng".to_string(),
             label: label.map(|s| s.to_string()),
         });
         Ok(())
