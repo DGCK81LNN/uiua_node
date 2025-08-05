@@ -1,0 +1,48 @@
+name: Build and Pack Node Package
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: x86_64-unknown-linux-gnu
+      
+      - name: Set package version
+        run: |
+          jq --arg t $(date +'%Y%m%d%H%M%S') '.version += "-dev." + $t' package.json > package.tmp.json
+          mv package.tmp.json package.json
+
+      - name: Install Node dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Pack npm package
+        run: npm pack
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dgck81lnn-uiua-node-x86_64-unknown-linux-gnu
+          path: "*.tgz"

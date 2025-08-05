@@ -2,6 +2,9 @@
   "name": "@dgck81lnn/uiua",
   "version": "0.1.0",
   "description": "",
+  "files": [
+    "index.node"
+  ],
   "main": "index.node",
   "scripts": {
     "test": "cargo test",
