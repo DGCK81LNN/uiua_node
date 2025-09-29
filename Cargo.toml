@@ -22,4 +22,4 @@ image = { version = ">=0.25", default-features = false, features = [
   "qoi",
   "webp",
 ] }
-uiua = { version = "0.17.0", default-features = false, features = ["batteries"] }
+uiua = { version = "0.17.1", default-features = false, features = ["batteries"] }
