@@ -1,5 +1,5 @@
 use image::{DynamicImage, ImageFormat};
-use std::{io::Cursor, mem::take, sync::Mutex};
+use std::{borrow::Cow, io::Cursor, mem::take, sync::Mutex};
 use uiua::*;
 
 pub enum OutputItem {
@@ -115,5 +115,13 @@ impl SysBackend for MultimediaBackend {
             label: label.map(|s| s.to_string()),
         });
         Ok(())
+    }
+    fn big_constant(&self, key: BigConstant) -> Result<Cow<'static, [u8]>, String> {
+        Ok(Cow::Borrowed(match key {
+            BigConstant::Uiua386 => include_bytes!("../vendor/uiua-assets/Uiua386.ttf"),
+            BigConstant::Elevation => include_bytes!("../vendor/uiua-assets/elevation.webp"),
+            BigConstant::BadAppleGif => include_bytes!("../vendor/uiua-assets/bad-apple.gif"),
+            BigConstant::Amen => include_bytes!("../vendor/uiua-assets/amen-break.wav"),
+        }))
     }
 }

@@ -8,3 +8,5 @@ cross.log
 .yarn
 .vscode/settings.json
 *.tgz
+
+vendor/uiua-assets
