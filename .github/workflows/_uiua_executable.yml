@@ -1,0 +1,47 @@
+name: Build uiua executable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Read uiua version from Cargo.toml
+        id: uiua
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(grep -oE 'uiua = .*version = "[^"]+"' Cargo.toml \
+            | sed -E 's/.*version = "([^"]+)".*/\1/' \
+            | head -n 1)
+          if [[ -z "$VERSION" ]]; then
+            echo "Could not determine uiua version from Cargo.toml" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build uiua executable
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cargo install \
+            --locked \
+            --version "${{ steps.uiua.outputs.version }}" \
+            --root "$RUNNER_TEMP/uiua" \
+            --features batteries \
+            uiua
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uiua-${{ steps.uiua.outputs.version }}-linux-x86_64
+          path: ${{ runner.temp }}/uiua/bin/uiua
+          if-no-files-found: error
